@@ -1,8 +1,21 @@
 package cn.kizzzy.animations;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StateInfo {
-    public float time;
-    public Object target;
-    public float length;
-    public Object enterTime;
+    
+    public long time;
+    
+    public float elapse;
+    
+    public long length;
+    
+    public long enterTime;
+    
+    public Runnable before;
+    
+    public Runnable after;
+    
+    public Map<Object, KfEvaluator<?>> evaluatorKvs = new HashMap<>();
 }

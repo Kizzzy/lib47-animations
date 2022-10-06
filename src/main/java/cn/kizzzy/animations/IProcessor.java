@@ -1,5 +1,6 @@
 package cn.kizzzy.animations;
 
-public interface IProcessor {
-    void process(Object target, Object evaluate);
+public interface IProcessor<T> {
+    
+    void process(StateInfo stateInfo, T value);
 }

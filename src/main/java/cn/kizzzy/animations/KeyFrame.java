@@ -1,6 +1,8 @@
 package cn.kizzzy.animations;
 
-public class KeyFrame {
+public class KeyFrame<T> {
+    
     public long time;
-    public Object value;
+    
+    public T value;
 }

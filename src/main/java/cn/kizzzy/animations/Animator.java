@@ -2,50 +2,57 @@ package cn.kizzzy.animations;
 
 public class Animator {
     
-    private AnimatorController controller;
-    
-    private float speed;
-    
-    private StateInfo StateInfo =
+    private final StateInfo stateInfo =
         new StateInfo();
     
-    public void update() {
+    private float speed = 1f;
+    
+    private long lastTime;
+    
+    private boolean loop = true;
+    
+    private AnimationController controller;
+    
+    public void update(AnimatorUpdateType updateType) {
+        long elapse = System.currentTimeMillis() - lastTime;
+        lastTime = System.currentTimeMillis();
+        
         if (speed == 0 || controller == null) {
             return;
         }
         
-        //StateInfo.time += Time.fixedDeltaTime * speed;
+        if (stateInfo.time >= stateInfo.length || stateInfo.time < 0) {
+            stateInfo.time = 0;
+            // todo notify end of animation
+        }
         
-        controller.update(StateInfo);
-        
-        if (StateInfo.time >= StateInfo.length) {
-            StateInfo.time = 0;
-            // todo
+        if (stateInfo.time < stateInfo.length) {
+            stateInfo.before.run();
+            controller.update(stateInfo, updateType);
+            stateInfo.time += elapse * speed;
+            stateInfo.elapse = elapse * speed;
+            stateInfo.after.run();
         }
     }
     
-    public void setController(AnimatorController controller, boolean reset) {
+    public void setController(AnimationController controller, boolean reset) {
         reset = reset || this.controller == null && controller != null;
         
         this.controller = controller;
         
         if (reset) {
-            //StateInfo.enterTime = Time.time;
+            lastTime = System.currentTimeMillis();
+            stateInfo.enterTime = 0;
+            stateInfo.evaluatorKvs.clear();
             if (controller != null) {
-                // todo
-                //StateInfo.target = gameObject;
-                StateInfo.length = controller.getLength();
-                StateInfo.time = 0;
+                stateInfo.time = 0;
+                stateInfo.length = controller.getLength();
             }
         }
     }
     
-    public AnimatorController getController() {
+    public AnimationController getController() {
         return controller;
-    }
-    
-    public void setController(AnimatorController controller) {
-        this.controller = controller;
     }
     
     public float getSpeed() {
@@ -56,11 +63,15 @@ public class Animator {
         this.speed = speed;
     }
     
-    public cn.kizzzy.animations.StateInfo getStateInfo() {
-        return StateInfo;
+    public boolean getLoop() {
+        return loop;
     }
     
-    public void setStateInfo(cn.kizzzy.animations.StateInfo stateInfo) {
-        StateInfo = stateInfo;
+    public void setLoop(boolean loop) {
+        this.loop = loop;
+    }
+    
+    public StateInfo getStateInfo() {
+        return stateInfo;
     }
 }

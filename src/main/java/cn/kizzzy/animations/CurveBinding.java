@@ -1,24 +1,21 @@
 package cn.kizzzy.animations;
 
-public class CurveBinding {
-    private IProcessor processor;
+public class CurveBinding<T> {
     
-    private AnimationCurve curve;
+    private final IProcessor<T> processor;
     
-    public CurveBinding(AnimationCurve curve, IProcessor processor) {
+    private final AnimationCurve<T> curve;
+    
+    public CurveBinding(AnimationCurve<T> curve, IProcessor<T> processor) {
         this.curve = curve;
         this.processor = processor;
     }
     
-    public void Update(StateInfo stateInfo) {
-        processor.process(stateInfo.target, curve.evaluate(stateInfo.time));
+    public void Update(StateInfo stateInfo, AnimatorUpdateType updateType) {
+        processor.process(stateInfo, curve.evaluate(stateInfo, updateType));
     }
     
-    public AnimationCurve getCurve() {
+    public AnimationCurve<T> getCurve() {
         return curve;
-    }
-    
-    public void setCurve(AnimationCurve curve) {
-        this.curve = curve;
     }
 }

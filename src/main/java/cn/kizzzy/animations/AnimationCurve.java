@@ -1,36 +1,30 @@
 package cn.kizzzy.animations;
 
-public class AnimationCurve {
-    private KeyFrame[] keyFrames;
-    private TangentMode tangentMode;
+@SuppressWarnings("unchecked")
+public class AnimationCurve<T> {
     
-    private int length;
+    private final KeyFrame<T>[] keyFrames;
     
-    public AnimationCurve(KeyFrame[] keyFrames, TangentMode tangentMode) {
+    private final TangentMode<T> tangentMode;
+    
+    private final long length;
+    
+    public AnimationCurve(KeyFrame<T>[] keyFrames, TangentMode<T> tangentMode) {
         this.keyFrames = keyFrames;
         this.tangentMode = tangentMode;
+        
+        length = keyFrames[keyFrames.length - 1].time;
     }
     
-    public Object evaluate(float time) {
-        KeyFrame prev = null;
-        KeyFrame next = null;
-        
-        for (KeyFrame keyFrame : keyFrames) {
-            if (time < keyFrame.time) {
-                next = keyFrame;
-            }
-            prev = keyFrame;
-        }
-        
-        if (next == null) {
-            return prev.value;
-        }
-        
-        float t = (time - prev.time) / (next.time - prev.time);
-        return tangentMode.lerp(prev.value, next.value, Math.min(1, Math.max(0, t)));
+    public T evaluate(StateInfo stateInfo, AnimatorUpdateType updateType) {
+        KfEvaluator<T> evaluator = (KfEvaluator<T>) stateInfo.evaluatorKvs.computeIfAbsent(this, k -> {
+            return new LinkedKfEvaluator<>(keyFrames);
+        });
+        KfEvaluator.Result<T> result = evaluator.evaluate(stateInfo, updateType);
+        return tangentMode.lerp(result.curr.value, result.next.value, result.rate);
     }
     
-    public int getLength() {
+    public long getLength() {
         return length;
     }
 }

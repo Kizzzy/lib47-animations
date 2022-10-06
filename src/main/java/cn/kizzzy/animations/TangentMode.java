@@ -1,6 +1,6 @@
 package cn.kizzzy.animations;
 
-public interface TangentMode {
+public interface TangentMode<T> {
     
-    Object lerp(Object x, Object y, float time);
+    T lerp(T x, T y, float rate);
 }
