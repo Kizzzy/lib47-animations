@@ -4,4 +4,5 @@ public enum AnimatorUpdateType {
     PREV,
     TIME,
     NEXT,
+    NONE
 }

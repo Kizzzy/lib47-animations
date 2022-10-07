@@ -40,7 +40,9 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
     
     @Override
     public Result<T> evaluate(StateInfo stateInfo) {
-        elapse += stateInfo.elapse;
+        if (stateInfo.updateType != AnimatorUpdateType.NONE) {
+            elapse += stateInfo.elapse;
+        }
         float rate = elapse * 1f / (curr.kf.time == 0 ? Integer.MAX_VALUE : curr.kf.time);
         
         if (stateInfo.updateType == AnimatorUpdateType.PREV) {
@@ -51,6 +53,8 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
             curr = curr.next;
             this.elapse = 0;
             rate = 0;
+        } else if (stateInfo.updateType == AnimatorUpdateType.NONE) {
+        
         } else {
             if ((stateInfo.loop || !curr.last) && elapse > curr.kf.time) {
                 curr = curr.next;
