@@ -11,8 +11,8 @@ public class CurveBinding<T> {
         this.processor = processor;
     }
     
-    public void Update(StateInfo stateInfo, AnimatorUpdateType updateType) {
-        processor.process(stateInfo, curve.evaluate(stateInfo, updateType));
+    public void Update(StateInfo stateInfo) {
+        processor.process(stateInfo, curve.evaluate(stateInfo));
     }
     
     public AnimationCurve<T> getCurve() {

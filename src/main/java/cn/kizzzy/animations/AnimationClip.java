@@ -15,9 +15,9 @@ public class AnimationClip {
         return 0;
     }
     
-    public void update(StateInfo stateInfo, AnimatorUpdateType updateType) {
+    public void update(StateInfo stateInfo) {
         for (CurveBinding<?> binding : bindings) {
-            binding.Update(stateInfo, updateType);
+            binding.Update(stateInfo);
         }
     }
 }

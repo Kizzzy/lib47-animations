@@ -13,6 +13,10 @@ public class StateInfo {
     
     public long enterTime;
     
+    public boolean loop;
+    
+    public AnimatorUpdateType updateType;
+    
     public Runnable before;
     
     public Runnable after;

@@ -17,5 +17,5 @@ public interface KfEvaluator<T> {
         }
     }
     
-    Result<T> evaluate(StateInfo stateInfo, AnimatorUpdateType updateType);
+    Result<T> evaluate(StateInfo stateInfo);
 }

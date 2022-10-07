@@ -6,12 +6,15 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
         
         public final KeyFrame<T> kf;
         
+        public final boolean last;
+        
         public Node<T> prev;
         
         public Node<T> next;
         
-        public Node(KeyFrame<T> kf) {
+        public Node(KeyFrame<T> kf, boolean last) {
             this.kf = kf;
+            this.last = last;
         }
     }
     
@@ -22,7 +25,7 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
     public LinkedKfEvaluator(KeyFrame<T>[] keyFrames) {
         Node<T>[] nodes = new Node[keyFrames.length];
         for (int i = 0; i < keyFrames.length; ++i) {
-            nodes[i] = new Node<>(keyFrames[i]);
+            nodes[i] = new Node<>(keyFrames[i], i == keyFrames.length - 1);
         }
         for (int i = 0; i < nodes.length; ++i) {
             Node<T> curr = nodes[i];
@@ -36,20 +39,20 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
     }
     
     @Override
-    public Result<T> evaluate(StateInfo stateInfo, AnimatorUpdateType updateType) {
+    public Result<T> evaluate(StateInfo stateInfo) {
         elapse += stateInfo.elapse;
         float rate = elapse * 1f / (curr.kf.time == 0 ? Integer.MAX_VALUE : curr.kf.time);
         
-        if (updateType == AnimatorUpdateType.PREV) {
+        if (stateInfo.updateType == AnimatorUpdateType.PREV) {
             curr = curr.prev;
             this.elapse = 0;
             rate = 0;
-        } else if (updateType == AnimatorUpdateType.NEXT) {
+        } else if (stateInfo.updateType == AnimatorUpdateType.NEXT) {
             curr = curr.next;
             this.elapse = 0;
             rate = 0;
         } else {
-            if (elapse > curr.kf.time) {
+            if ((stateInfo.loop || !curr.last) && elapse > curr.kf.time) {
                 curr = curr.next;
                 this.elapse = 0;
                 rate = 0;

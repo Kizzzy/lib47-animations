@@ -28,9 +28,14 @@ public class Animator {
         
         if (stateInfo.time < stateInfo.length) {
             stateInfo.before.run();
-            controller.update(stateInfo, updateType);
+            
+            stateInfo.loop = loop;
+            stateInfo.updateType = updateType;
             stateInfo.time += elapse * speed;
             stateInfo.elapse = elapse * speed;
+            
+            controller.update(stateInfo);
+            
             stateInfo.after.run();
         }
     }

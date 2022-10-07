@@ -15,7 +15,7 @@ public class AnimationController {
         return 0;
     }
     
-    public void update(StateInfo stateInfo, AnimatorUpdateType updateType) {
-        clip.update(stateInfo, updateType);
+    public void update(StateInfo stateInfo) {
+        clip.update(stateInfo);
     }
 }

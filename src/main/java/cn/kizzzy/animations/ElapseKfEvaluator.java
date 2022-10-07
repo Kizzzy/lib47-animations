@@ -10,7 +10,7 @@ public class ElapseKfEvaluator<T> implements KfEvaluator<T> {
         this.keyFrames = keyFrames;
     }
     
-    public Result<T> evaluate(StateInfo stateInfo, AnimatorUpdateType updateType) {
+    public Result<T> evaluate(StateInfo stateInfo) {
         KeyFrame<T> prev = null;
         KeyFrame<T> next = null;
         

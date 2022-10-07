@@ -36,6 +36,7 @@ public class AnimatorPlayer implements Runnable {
     
     public void stop() {
         running = false;
+        thread = null;
     }
     
     public void prev() {

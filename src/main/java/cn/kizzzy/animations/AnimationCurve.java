@@ -16,11 +16,11 @@ public class AnimationCurve<T> {
         length = keyFrames[keyFrames.length - 1].time;
     }
     
-    public T evaluate(StateInfo stateInfo, AnimatorUpdateType updateType) {
+    public T evaluate(StateInfo stateInfo) {
         KfEvaluator<T> evaluator = (KfEvaluator<T>) stateInfo.evaluatorKvs.computeIfAbsent(this, k -> {
             return new LinkedKfEvaluator<>(keyFrames);
         });
-        KfEvaluator.Result<T> result = evaluator.evaluate(stateInfo, updateType);
+        KfEvaluator.Result<T> result = evaluator.evaluate(stateInfo);
         return tangentMode.lerp(result.curr.value, result.next.value, result.rate);
     }
     
