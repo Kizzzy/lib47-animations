@@ -47,6 +47,10 @@ public class AnimatorPlayer implements Runnable {
         animator.update(AnimatorUpdateType.NEXT);
     }
     
+    public void jumpTo(int frameIndex) {
+        animator.jumpTo(frameIndex);
+    }
+    
     @Override
     public void run() {
         while (running) {

@@ -27,17 +27,25 @@ public class Animator {
         }
         
         if (stateInfo.time < stateInfo.length) {
-            stateInfo.before.run();
+            if (stateInfo.callback != null) {
+                stateInfo.callback.beforeUpdate();
+            }
             
             stateInfo.loop = loop;
             stateInfo.updateType = updateType;
-            stateInfo.time += elapse * speed;
             stateInfo.elapse = elapse * speed;
+            stateInfo.time += (long) (elapse * speed);
             
             controller.update(stateInfo);
             
-            stateInfo.after.run();
+            if (stateInfo.callback != null) {
+                stateInfo.callback.afterUpdate();
+            }
         }
+    }
+    
+    public void jumpTo(int frameIndex) {
+        // todo
     }
     
     public void setController(AnimationController controller, boolean reset) {

@@ -17,9 +17,8 @@ public class StateInfo {
     
     public AnimatorUpdateType updateType;
     
-    public Runnable before;
+    public AnimatorCallback callback;
     
-    public Runnable after;
-    
-    public Map<Object, KfEvaluator<?>> evaluatorKvs = new HashMap<>();
+    public Map<Object, KfEvaluator<?>> evaluatorKvs
+        = new HashMap<>();
 }
