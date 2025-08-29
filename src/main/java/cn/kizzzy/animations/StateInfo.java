@@ -7,7 +7,7 @@ public class StateInfo {
     
     public long time;
     
-    public float elapse;
+    public long elapse;
     
     public long length;
     

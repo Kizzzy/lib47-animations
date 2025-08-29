@@ -8,14 +8,11 @@ public class AnimationController {
         this.clip = clip;
     }
     
-    public long getLength() {
-        if (clip != null) {
-            return clip.getLength();
-        }
-        return 0;
-    }
-    
     public void update(StateInfo stateInfo) {
         clip.update(stateInfo);
+    }
+    
+    public long length() {
+        return clip.length();
     }
 }

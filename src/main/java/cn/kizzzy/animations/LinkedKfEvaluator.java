@@ -19,14 +19,16 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
     }
     
     private Node<T> curr;
-    
+    private long length;
     private long elapse;
     
     public LinkedKfEvaluator(KeyFrame<T>[] keyFrames) {
         Node<T>[] nodes = new Node[keyFrames.length];
         for (int i = 0; i < keyFrames.length; ++i) {
             nodes[i] = new Node<>(keyFrames[i], i == keyFrames.length - 1);
+            length += keyFrames[i].time;
         }
+        
         for (int i = 0; i < nodes.length; ++i) {
             Node<T> curr = nodes[i];
             curr.prev = nodes[(i - 1 + nodes.length) % nodes.length];
@@ -43,6 +45,7 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
         if (stateInfo.updateType != AnimatorUpdateType.NONE) {
             elapse += stateInfo.elapse;
         }
+        
         float rate = elapse * 1f / (curr.kf.time == 0 ? Integer.MAX_VALUE : curr.kf.time);
         
         if (stateInfo.updateType == AnimatorUpdateType.PREV) {
@@ -63,5 +66,10 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
             }
         }
         return new Result<>(curr.kf, curr.next.kf, Math.min(1, Math.max(0, rate)));
+    }
+    
+    @Override
+    public long length() {
+        return length;
     }
 }

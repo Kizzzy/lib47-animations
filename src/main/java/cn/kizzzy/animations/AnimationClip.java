@@ -8,16 +8,19 @@ public class AnimationClip {
         this.bindings = bindings;
     }
     
-    public long getLength() {
-        for (CurveBinding<?> binding : bindings) {
-            return binding.getCurve().getLength();
-        }
-        return 0;
-    }
-    
     public void update(StateInfo stateInfo) {
         for (CurveBinding<?> binding : bindings) {
             binding.Update(stateInfo);
         }
+    }
+    
+    public long length() {
+        long length = Long.MIN_VALUE;
+        for (CurveBinding<?> binding : bindings) {
+            if (binding.getCurve().length() > length) {
+                length = binding.getCurve().length();
+            }
+        }
+        return length;
     }
 }

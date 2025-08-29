@@ -1,30 +1,23 @@
 package cn.kizzzy.animations;
 
-@SuppressWarnings("unchecked")
 public class AnimationCurve<T> {
     
-    private final KeyFrame<T>[] keyFrames;
-    
     private final TangentMode<T> tangentMode;
+    private final KfEvaluator<T> evaluator;
     
-    private final long length;
-    
-    public AnimationCurve(KeyFrame<T>[] keyFrames, TangentMode<T> tangentMode) {
-        this.keyFrames = keyFrames;
+    public AnimationCurve(KeyFrame<T>[] kfs, TangentMode<T> tangentMode, boolean linked) {
         this.tangentMode = tangentMode;
-        
-        length = keyFrames[keyFrames.length - 1].time;
+        this.evaluator = linked ?
+            new LinkedKfEvaluator<>(kfs) :
+            new ElapseKfEvaluator<>(kfs);
     }
     
     public T evaluate(StateInfo stateInfo) {
-        KfEvaluator<T> evaluator = (KfEvaluator<T>) stateInfo.evaluatorKvs.computeIfAbsent(this, k -> {
-            return new LinkedKfEvaluator<>(keyFrames);
-        });
         KfEvaluator.Result<T> result = evaluator.evaluate(stateInfo);
         return tangentMode.lerp(result.curr.value, result.next.value, result.rate);
     }
     
-    public long getLength() {
-        return length;
+    public long length() {
+        return evaluator.length();
     }
 }

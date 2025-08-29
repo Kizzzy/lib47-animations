@@ -31,10 +31,12 @@ public class Animator {
                 stateInfo.callback.beforeUpdate();
             }
             
+            elapse = (long) (elapse * speed);
+            
             stateInfo.loop = loop;
             stateInfo.updateType = updateType;
-            stateInfo.elapse = elapse * speed;
-            stateInfo.time += (long) (elapse * speed);
+            stateInfo.elapse = elapse;
+            stateInfo.time += elapse;
             
             controller.update(stateInfo);
             
@@ -59,7 +61,7 @@ public class Animator {
             stateInfo.evaluatorKvs.clear();
             if (controller != null) {
                 stateInfo.time = 0;
-                stateInfo.length = controller.getLength();
+                stateInfo.length = controller.length();
             }
         }
     }
