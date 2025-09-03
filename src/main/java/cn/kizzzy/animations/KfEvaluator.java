@@ -20,4 +20,8 @@ public interface KfEvaluator<T> {
     Result<T> evaluate(StateInfo stateInfo);
     
     long length();
+    
+    long startTime();
+    
+    long endTime();
 }

@@ -3,10 +3,14 @@ package cn.kizzzy.animations;
 public class ElapseKfEvaluator<T> implements KfEvaluator<T> {
     
     private final KeyFrame<T>[] keyFrames;
+    private final long startTime;
+    
     private final long length;
     
-    public ElapseKfEvaluator(KeyFrame<T>[] keyFrames) {
+    public ElapseKfEvaluator(KeyFrame<T>[] keyFrames, long startTime) {
         this.keyFrames = keyFrames;
+        this.startTime = startTime;
+        
         length = keyFrames[keyFrames.length - 1].time;
     }
     
@@ -33,5 +37,15 @@ public class ElapseKfEvaluator<T> implements KfEvaluator<T> {
     @Override
     public long length() {
         return length;
+    }
+    
+    @Override
+    public long startTime() {
+        return startTime;
+    }
+    
+    @Override
+    public long endTime() {
+        return length();
     }
 }

@@ -13,6 +13,8 @@ public class StateInfo {
     
     public long enterTime;
     
+    public long index;
+    
     public boolean loop;
     
     public AnimatorUpdateType updateType;

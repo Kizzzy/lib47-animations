@@ -21,28 +21,37 @@ public class Animator {
             return;
         }
         
-        if (stateInfo.time >= stateInfo.length || stateInfo.time < 0) {
-            stateInfo.time = 0;
-            // todo notify end of animation
+        stateInfo.loop = loop;
+        stateInfo.updateType = updateType;
+        
+        if (stateInfo.callback != null) {
+            stateInfo.callback.beforeUpdate();
         }
         
-        if (stateInfo.time < stateInfo.length) {
-            if (stateInfo.callback != null) {
-                stateInfo.callback.beforeUpdate();
+        controller.update(stateInfo);
+        
+        if (stateInfo.callback != null) {
+            stateInfo.callback.afterUpdate();
+        }
+        
+        if (stateInfo.time >= stateInfo.length || stateInfo.time < 0) {
+            stateInfo.elapse = 0;
+            stateInfo.time = 0;
+            stateInfo.index = (stateInfo.index + 1) % 1000;
+            // todo notify end of animation
+        } else {
+            if (updateType == AnimatorUpdateType.NEXT ||
+                updateType == AnimatorUpdateType.PREV) {
+                elapse = 0;
+            } else {
+                elapse = (long) (elapse * speed);
+                if ((stateInfo.time + elapse) > stateInfo.length) {
+                    elapse = stateInfo.length - stateInfo.time;
+                }
             }
             
-            elapse = (long) (elapse * speed);
-            
-            stateInfo.loop = loop;
-            stateInfo.updateType = updateType;
             stateInfo.elapse = elapse;
             stateInfo.time += elapse;
-            
-            controller.update(stateInfo);
-            
-            if (stateInfo.callback != null) {
-                stateInfo.callback.afterUpdate();
-            }
         }
     }
     
@@ -59,15 +68,14 @@ public class Animator {
             lastTime = System.currentTimeMillis();
             stateInfo.enterTime = 0;
             stateInfo.evaluatorKvs.clear();
+            
             if (controller != null) {
                 stateInfo.time = 0;
+                stateInfo.elapse = 0;
+                stateInfo.index = 0;
                 stateInfo.length = controller.length();
             }
         }
-    }
-    
-    public AnimationController getController() {
-        return controller;
     }
     
     public float getSpeed() {

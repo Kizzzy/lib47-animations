@@ -1,5 +1,6 @@
 package cn.kizzzy.animations;
 
+@SuppressWarnings("unchecked")
 public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
     
     public static class Node<T> {
@@ -8,24 +9,35 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
         
         public final boolean last;
         
+        public final boolean first;
+        
         public Node<T> prev;
         
         public Node<T> next;
         
-        public Node(KeyFrame<T> kf, boolean last) {
+        public Node(KeyFrame<T> kf, boolean first, boolean last) {
             this.kf = kf;
+            this.first = first;
             this.last = last;
         }
     }
     
+    private final long startTime;
+    
     private Node<T> curr;
+    private Node<T> first;
+    private Node<T> last;
+    
     private long length;
     private long elapse;
+    private long index = -1;
     
-    public LinkedKfEvaluator(KeyFrame<T>[] keyFrames) {
+    public LinkedKfEvaluator(KeyFrame<T>[] keyFrames, long startTime) {
+        this.startTime = startTime;
+        
         Node<T>[] nodes = new Node[keyFrames.length];
         for (int i = 0; i < keyFrames.length; ++i) {
-            nodes[i] = new Node<>(keyFrames[i], i == keyFrames.length - 1);
+            nodes[i] = new Node<>(keyFrames[i], i == 0, i == keyFrames.length - 1);
             length += keyFrames[i].time;
         }
         
@@ -34,42 +46,69 @@ public class LinkedKfEvaluator<T> implements KfEvaluator<T> {
             curr.prev = nodes[(i - 1 + nodes.length) % nodes.length];
             curr.next = nodes[(i + 1) % nodes.length];
             
-            if (i == 0) {
+            if (curr.first) {
                 this.curr = curr;
+                first = curr;
+            }
+            
+            if (curr.last) {
+                last = curr;
             }
         }
     }
     
     @Override
     public Result<T> evaluate(StateInfo stateInfo) {
-        if (stateInfo.updateType != AnimatorUpdateType.NONE) {
-            elapse += stateInfo.elapse;
+        if (stateInfo.index != index) {
+            index = stateInfo.index;
+            
+            curr = first;
+            elapse = 0;
+            
+            return new Result<>(curr.kf, curr.next.kf, 0);
         }
         
-        float rate = elapse * 1f / (curr.kf.time == 0 ? Integer.MAX_VALUE : curr.kf.time);
-        
-        if (stateInfo.updateType == AnimatorUpdateType.PREV) {
-            curr = curr.prev;
-            this.elapse = 0;
-            rate = 0;
-        } else if (stateInfo.updateType == AnimatorUpdateType.NEXT) {
-            curr = curr.next;
-            this.elapse = 0;
-            rate = 0;
-        } else if (stateInfo.updateType == AnimatorUpdateType.NONE) {
-        
-        } else {
-            if ((stateInfo.loop || !curr.last) && elapse > curr.kf.time) {
-                curr = curr.next;
-                this.elapse = 0;
-                rate = 0;
-            }
+        switch (stateInfo.updateType) {
+            case PREV:
+                if (/*stateInfo.loop ||*/ !curr.first) {
+                    curr = curr.prev;
+                    elapse = 0;
+                }
+                return new Result<>(curr.kf, curr.next.kf, 0);
+            case NEXT:
+                if (/*stateInfo.loop ||*/ !curr.last) {
+                    curr = curr.next;
+                    elapse = 0;
+                }
+                return new Result<>(curr.kf, curr.next.kf, 0);
+            case TIME:
+                elapse += stateInfo.elapse;
+                if ((/*stateInfo.loop || */!curr.last) && elapse > curr.kf.time) {
+                    elapse -= curr.kf.time;
+                    curr = curr.next;
+                }
+                
+                float rate = elapse * 1f / (curr.kf.time == 0 ? Integer.MAX_VALUE : curr.kf.time);
+                rate = Math.min(1, Math.max(0, rate));
+                
+                return new Result<>(curr.kf, curr.next.kf, rate);
+            default:
+                return new Result<>(curr.kf, curr.next.kf, 0);
         }
-        return new Result<>(curr.kf, curr.next.kf, Math.min(1, Math.max(0, rate)));
     }
     
     @Override
     public long length() {
         return length;
+    }
+    
+    @Override
+    public long startTime() {
+        return startTime;
+    }
+    
+    @Override
+    public long endTime() {
+        return startTime + length();
     }
 }

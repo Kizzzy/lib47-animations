@@ -2,23 +2,23 @@ package cn.kizzzy.animations;
 
 public class AnimationClip {
     
-    private final CurveBinding<?>[] bindings;
+    private final AnimationCurveBinding<?>[] bindings;
     
-    public AnimationClip(CurveBinding<?>[] bindings) {
+    public AnimationClip(AnimationCurveBinding<?>[] bindings) {
         this.bindings = bindings;
     }
     
     public void update(StateInfo stateInfo) {
-        for (CurveBinding<?> binding : bindings) {
+        for (AnimationCurveBinding<?> binding : bindings) {
             binding.Update(stateInfo);
         }
     }
     
     public long length() {
         long length = Long.MIN_VALUE;
-        for (CurveBinding<?> binding : bindings) {
-            if (binding.getCurve().length() > length) {
-                length = binding.getCurve().length();
+        for (AnimationCurveBinding<?> binding : bindings) {
+            if (binding.length() > length) {
+                length = binding.length();
             }
         }
         return length;
