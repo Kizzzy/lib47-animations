@@ -6,17 +6,12 @@ public class Animator {
         new StateInfo();
     
     private float speed = 1f;
+    private boolean loop = false;
     
-    private long lastTime;
-    
-    private boolean loop = true;
-    
+    private long index = -1;
     private AnimationController controller;
     
     public void update(AnimatorUpdateType updateType) {
-        long elapse = System.currentTimeMillis() - lastTime;
-        lastTime = System.currentTimeMillis();
-        
         if (speed == 0 || controller == null) {
             return;
         }
@@ -28,18 +23,8 @@ public class Animator {
             stateInfo.callback.beforeUpdate();
         }
         
-        controller.update(stateInfo);
-        
-        if (stateInfo.callback != null) {
-            stateInfo.callback.afterUpdate();
-        }
-        
-        if (stateInfo.time >= stateInfo.length || stateInfo.time < 0) {
-            stateInfo.elapse = 0;
-            stateInfo.time = 0;
-            stateInfo.index = (stateInfo.index + 1) % 1000;
-            // todo notify end of animation
-        } else {
+        if ((index == stateInfo.index) && (stateInfo.time < stateInfo.length)) {
+            long elapse = 40;
             if (updateType == AnimatorUpdateType.NEXT ||
                 updateType == AnimatorUpdateType.PREV) {
                 elapse = 0;
@@ -53,6 +38,22 @@ public class Animator {
             stateInfo.elapse = elapse;
             stateInfo.time += elapse;
         }
+        
+        controller.update(stateInfo);
+        index = stateInfo.index;
+        
+        if (stateInfo.callback != null) {
+            stateInfo.callback.afterUpdate();
+        }
+        
+        if (loop) {
+            if (stateInfo.time >= stateInfo.length || stateInfo.time < 0) {
+                stateInfo.elapse = 0;
+                stateInfo.time = 0;
+                stateInfo.index = (stateInfo.index + 1) % 1000;
+                // todo notify end of animation
+            }
+        }
     }
     
     public void jumpTo(int frameIndex) {
@@ -65,9 +66,7 @@ public class Animator {
         this.controller = controller;
         
         if (reset) {
-            lastTime = System.currentTimeMillis();
-            stateInfo.enterTime = 0;
-            stateInfo.evaluatorKvs.clear();
+            index = -1;
             
             if (controller != null) {
                 stateInfo.time = 0;

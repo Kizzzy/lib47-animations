@@ -1,8 +1,5 @@
 package cn.kizzzy.animations;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class StateInfo {
     
     public long time;
@@ -11,8 +8,6 @@ public class StateInfo {
     
     public long length;
     
-    public long enterTime;
-    
     public long index;
     
     public boolean loop;
@@ -20,7 +15,4 @@ public class StateInfo {
     public AnimatorUpdateType updateType;
     
     public AnimatorCallback callback;
-    
-    public Map<Object, KfEvaluator<?>> evaluatorKvs
-        = new HashMap<>();
 }

@@ -11,7 +11,7 @@ public class AnimationCurveBinding<T> {
         this.processor = processor;
     }
     
-    public void Update(StateInfo stateInfo) {
+    public void update(StateInfo stateInfo) {
         T value = curve.evaluate(stateInfo);
         if (value != null) {
             processor.process(stateInfo, value);

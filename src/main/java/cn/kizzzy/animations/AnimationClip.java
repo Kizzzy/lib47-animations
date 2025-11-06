@@ -10,7 +10,7 @@ public class AnimationClip {
     
     public void update(StateInfo stateInfo) {
         for (AnimationCurveBinding<?> binding : bindings) {
-            binding.Update(stateInfo);
+            binding.update(stateInfo);
         }
     }
     

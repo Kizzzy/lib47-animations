@@ -4,9 +4,8 @@ public class AnimatorPlayer implements Runnable {
     
     private final Animator animator;
     
-    private volatile boolean running;
-    
     private Thread thread;
+    private volatile boolean running;
     
     public AnimatorPlayer(Animator animator) {
         this.animator = animator;
@@ -14,6 +13,7 @@ public class AnimatorPlayer implements Runnable {
     
     public void reset() {
         running = false;
+        
         if (thread != null) {
             try {
                 thread.join();
@@ -31,24 +31,11 @@ public class AnimatorPlayer implements Runnable {
         
         thread = new Thread(this);
         thread.start();
-        
     }
     
     public void stop() {
         running = false;
         thread = null;
-    }
-    
-    public void prev() {
-        animator.update(AnimatorUpdateType.PREV);
-    }
-    
-    public void next() {
-        animator.update(AnimatorUpdateType.NEXT);
-    }
-    
-    public void jumpTo(int frameIndex) {
-        animator.jumpTo(frameIndex);
     }
     
     @Override
@@ -67,9 +54,5 @@ public class AnimatorPlayer implements Runnable {
     
     public boolean isPlaying() {
         return running;
-    }
-    
-    public Animator getAnimator() {
-        return animator;
     }
 }
